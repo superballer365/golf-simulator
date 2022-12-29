@@ -1,20 +1,14 @@
 import { useGLTF } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
 import React from "react";
-import { Vector3 } from "three";
+import * as THREE from "three";
 
 interface GolfBallProps {
-  position: Vector3;
+  position: THREE.Vector3;
 }
 
 export default function GolfBall({ position }: GolfBallProps) {
-  const [initialPosition] = React.useState(position);
-  const mesh = React.useRef<THREE.Mesh>(null!);
+  const mesh = React.useRef<THREE.Mesh>(null!); // We'll eventually want to switch to animating with refs: https://docs.pmnd.rs/react-three-fiber/tutorials/basic-animations#animating-with-refs
   const { scene } = useGLTF("models/golf_ball/scene.gltf");
 
-  React.useEffect(() => {
-    mesh.current.position.set(position.x, position.y, position.z);
-  }, [position]);
-
-  return <primitive ref={mesh} object={scene} position={initialPosition} />;
+  return <primitive ref={mesh} object={scene} position={position} />;
 }
