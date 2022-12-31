@@ -4,12 +4,16 @@ import * as THREE from "three";
 import GolfBall from "./components/GolfBall";
 import {
   SimulationStatus,
+  useBallPosition,
   useSimulationActions,
   useSimulationStatus,
 } from "./stores/SimulationStore";
+import useUnitHelper from "./hooks/useUnitHelper";
 
 export default function App() {
   const simulationStatus = useSimulationStatus();
+  const ballPosition = useBallPosition();
+  const { toDistanceDisplayUnit } = useUnitHelper();
   const { start, reset } = useSimulationActions();
 
   return (
@@ -25,6 +29,18 @@ export default function App() {
         >
           Start
         </button>
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          right: 10,
+          top: 10,
+          padding: "0.5rem",
+          zIndex: 10,
+          backgroundColor: "white",
+        }}
+      >
+        {toDistanceDisplayUnit(ballPosition.x).toFixed(1)}
       </div>
       <Canvas camera={{ position: [0, 0, 50] }}>
         <primitive object={new THREE.AxesHelper(10)} />

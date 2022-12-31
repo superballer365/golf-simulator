@@ -26,6 +26,12 @@ export const MeasurementTypesToConversionFunction = {
   [MeasurementTypes.Distance]: convertDistance,
 };
 
+export const MeasurementTypesToStorageUnit = {
+  [MeasurementTypes.Angle]: AngleUnits.Radians,
+  [MeasurementTypes.Speed]: SpeedUnits.MetersPerSecond,
+  [MeasurementTypes.Distance]: DistanceUnits.Meters,
+};
+
 export function convertAngle(
   value: number,
   inUnit: AngleUnits,
