@@ -1,5 +1,6 @@
 import create from "zustand";
 import * as THREE from "three";
+import { xOt, yOt } from "../utils/physics";
 
 export enum SimulationStatus {
   NotStarted,
@@ -16,6 +17,7 @@ export interface LaunchConditions {
 
 export interface SimulationState {
   status: SimulationStatus;
+  elapsedTime: number; // seconds
   ballPosition: THREE.Vector3;
   launchConditions: LaunchConditions;
   actions: {
@@ -23,15 +25,16 @@ export interface SimulationState {
     complete: () => void;
     reset: () => void;
     updateLaunchConditions: (newConditions: Partial<LaunchConditions>) => void;
-    updateBallPosition: (newPosition: THREE.Vector3) => void;
+    advanceSimulation: (by: number) => void;
   };
 }
 
 const useSimulationStore = create<SimulationState>((set) => ({
   status: SimulationStatus.NotStarted,
+  elapsedTime: 0,
   ballPosition: new THREE.Vector3(0, 0, 0),
   launchConditions: {
-    speed: 10,
+    speed: 20,
     verticalAngle: 0.5236, // 30 degrees
   },
   actions: {
@@ -40,19 +43,39 @@ const useSimulationStore = create<SimulationState>((set) => ({
     reset: () =>
       set({
         status: SimulationStatus.NotStarted,
+        elapsedTime: 0,
         ballPosition: new THREE.Vector3(0, 0, 0),
       }),
     updateLaunchConditions: (newConditions: Partial<LaunchConditions>) =>
       set((state) => {
-        if (state.status !== SimulationStatus.NotStarted) return state; // only update launch conditions when simulation has not started.
+        if (state.status !== SimulationStatus.NotStarted) return state; // only update launch conditions when simulation has not started
         return {
           launchConditions: { ...state.launchConditions, ...newConditions },
         };
       }),
-    updateBallPosition: (newPosition: THREE.Vector3) =>
+    advanceSimulation: (by: number) =>
       set((state) => {
-        if (state.status !== SimulationStatus.InProgress) return state; // only update ball position while simulation is in progress.
-        return { ballPosition: newPosition };
+        if (state.status !== SimulationStatus.InProgress) return state; // only advance simulation if it's in progress
+
+        const newElapsedTime = state.elapsedTime + by;
+        const newXPosition = xOt(
+          newElapsedTime,
+          0,
+          Math.cos(state.launchConditions.verticalAngle) *
+            state.launchConditions.speed
+        );
+        const newYPosition = yOt(
+          newElapsedTime,
+          0,
+          Math.sin(state.launchConditions.verticalAngle) *
+            state.launchConditions.speed
+        );
+        const newPosition = new THREE.Vector3(
+          newXPosition,
+          newYPosition,
+          state.ballPosition.z
+        );
+        return { ballPosition: newPosition, elapsedTime: newElapsedTime };
       }),
   },
 }));
