@@ -38,7 +38,13 @@ const useSimulationStore = create<SimulationState>((set) => ({
     verticalAngle: 0.5236, // 30 degrees
   },
   actions: {
-    start: () => set({ status: SimulationStatus.InProgress }),
+    start: () =>
+      set((state) => {
+        // start is a no-op if the simulation is in progress or completed
+        if (state.status !== SimulationStatus.NotStarted) return state;
+
+        return { status: SimulationStatus.InProgress };
+      }),
     complete: () => set({ status: SimulationStatus.Complete }),
     reset: () =>
       set({

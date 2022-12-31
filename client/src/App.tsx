@@ -3,11 +3,13 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import GolfBall from "./components/GolfBall";
 import {
-  useBallPosition,
+  SimulationStatus,
   useSimulationActions,
+  useSimulationStatus,
 } from "./stores/SimulationStore";
 
 export default function App() {
+  const simulationStatus = useSimulationStatus();
   const { start, reset } = useSimulationActions();
 
   return (
@@ -17,7 +19,12 @@ export default function App() {
     >
       <div style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
         <button onClick={reset}>Reset</button>
-        <button onClick={start}>Start</button>
+        <button
+          onClick={start}
+          disabled={simulationStatus !== SimulationStatus.NotStarted}
+        >
+          Start
+        </button>
       </div>
       <Canvas camera={{ position: [0, 0, 50] }}>
         <primitive object={new THREE.AxesHelper(10)} />
@@ -39,7 +46,7 @@ export default function App() {
  * For now use this component to advance the simulate clock at every frame.
  */
 function PhysicsTicker() {
-  const { advanceSimulation, complete } = useSimulationActions();
+  const { advanceSimulation } = useSimulationActions();
   useFrame((state, delta) => {
     advanceSimulation(delta);
   });
