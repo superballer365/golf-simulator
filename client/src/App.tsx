@@ -43,7 +43,7 @@ export default function App() {
 }
 
 /**
- * For now use this component to advance the simulate clock at every frame.
+ * For now use this component to advance the simulation clock at every frame.
  */
 function PhysicsTicker() {
   const { advanceSimulation } = useSimulationActions();
