@@ -40,16 +40,9 @@ export default function App() {
  */
 function PhysicsTicker() {
   const { advanceSimulation, complete } = useSimulationActions();
-  const ballPosition = useBallPosition();
-
   useFrame((state, delta) => {
     advanceSimulation(delta);
   });
-
-  // Complete the simulation when the ball crosses the horizontal plane
-  React.useEffect(() => {
-    if (ballPosition.y <= 0) complete();
-  }, [ballPosition, complete]);
 
   return null;
 }

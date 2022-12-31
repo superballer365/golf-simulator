@@ -75,7 +75,14 @@ const useSimulationStore = create<SimulationState>((set) => ({
           newYPosition,
           state.ballPosition.z
         );
-        return { ballPosition: newPosition, elapsedTime: newElapsedTime };
+        // if the ball crosses the horizontal plane, stop the simulation
+        const newStatus =
+          newPosition.y <= 0 ? SimulationStatus.Complete : state.status;
+        return {
+          status: newStatus,
+          ballPosition: newPosition,
+          elapsedTime: newElapsedTime,
+        };
       }),
   },
 }));
