@@ -9,7 +9,11 @@ import {
   useSimulationStatus,
 } from "./stores/SimulationStore";
 import useUnitHelper from "./hooks/useUnitHelper";
-import { MeasurementTypes } from "./utils/units";
+import { DistanceUnits, MeasurementTypes } from "./utils/units";
+import {
+  usePreferencesActions,
+  useUnitPreferences,
+} from "./stores/PreferencesStore";
 
 export default function App() {
   const simulationStatus = useSimulationStatus();
@@ -18,6 +22,10 @@ export default function App() {
     MeasurementTypes.Distance
   );
   const { start, reset } = useSimulationActions();
+  const unitPreferences = useUnitPreferences();
+  const { updateUnitPreferences } = usePreferencesActions();
+
+  const [showSettings, setShowSettings] = React.useState(false);
 
   return (
     <div
@@ -32,18 +40,58 @@ export default function App() {
         >
           Start
         </button>
+        <div
+          style={{
+            marginTop: "0.25rem",
+            padding: "0.5rem",
+            backgroundColor: "white",
+          }}
+        >
+          {formatDisplayValue(storageToDisplayUnit(ballPosition.x))}
+        </div>
       </div>
       <div
         style={{
           position: "absolute",
-          right: 10,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-end",
           top: 10,
-          padding: "0.5rem",
+          right: 10,
           zIndex: 10,
-          backgroundColor: "white",
         }}
       >
-        {formatDisplayValue(storageToDisplayUnit(ballPosition.x))}
+        <button
+          style={{ width: "min-content" }}
+          onClick={() => setShowSettings((prev) => !prev)}
+        >
+          Settings
+        </button>
+        {showSettings && (
+          <div
+            style={{
+              marginTop: "0.25rem",
+              padding: "0.5rem",
+              backgroundColor: "white",
+            }}
+          >
+            <label htmlFor="distanceUnits">Distance:</label>
+            <select
+              value={unitPreferences[MeasurementTypes.Distance]}
+              onChange={(e) =>
+                updateUnitPreferences({
+                  [MeasurementTypes.Distance]: e.target.value as DistanceUnits,
+                })
+              }
+            >
+              {Object.values(DistanceUnits).map((unit) => (
+                <option key={unit} value={unit}>
+                  {unit}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
       <Canvas camera={{ position: [0, 0, 50] }}>
         <primitive object={new THREE.AxesHelper(10)} />

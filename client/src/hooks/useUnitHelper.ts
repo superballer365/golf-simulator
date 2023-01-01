@@ -13,7 +13,7 @@ export default function useUnitHelper(type: MeasurementTypes) {
    * Given a value in storage units, convert it to display units based on the current user preferences.
    */
   const storageToDisplayUnit = React.useCallback(
-    (val: number) => {
+    (val: number): number => {
       // TODO: figure out how to make this type-safe
       const conversionFunc: any = MeasurementTypesToConversionFunction[type];
       return conversionFunc(
@@ -29,7 +29,7 @@ export default function useUnitHelper(type: MeasurementTypes) {
    * Given a value in display units, convert it to storage units.
    */
   const displayToStorageUnit = React.useCallback(
-    (val: number) => {
+    (val: number): number => {
       // TODO: figure out how to make this type-safe
       const conversionFunc: any = MeasurementTypesToConversionFunction[type];
       return conversionFunc(
