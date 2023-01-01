@@ -9,11 +9,14 @@ import {
   useSimulationStatus,
 } from "./stores/SimulationStore";
 import useUnitHelper from "./hooks/useUnitHelper";
+import { MeasurementTypes } from "./utils/units";
 
 export default function App() {
   const simulationStatus = useSimulationStatus();
   const ballPosition = useBallPosition();
-  const { toDistanceDisplayUnit } = useUnitHelper();
+  const { storageToDisplayUnit, formatDisplayValue } = useUnitHelper(
+    MeasurementTypes.Distance
+  );
   const { start, reset } = useSimulationActions();
 
   return (
@@ -40,7 +43,7 @@ export default function App() {
           backgroundColor: "white",
         }}
       >
-        {toDistanceDisplayUnit(ballPosition.x).toFixed(1)}
+        {formatDisplayValue(storageToDisplayUnit(ballPosition.x))}
       </div>
       <Canvas camera={{ position: [0, 0, 50] }}>
         <primitive object={new THREE.AxesHelper(10)} />

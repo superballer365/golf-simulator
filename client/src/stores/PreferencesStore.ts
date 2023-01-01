@@ -1,10 +1,15 @@
 import create from "zustand";
-import { AngleUnits, DistanceUnits, SpeedUnits } from "../utils/units";
+import {
+  AngleUnits,
+  DistanceUnits,
+  MeasurementTypes,
+  SpeedUnits,
+} from "../utils/units";
 
 export interface UnitPreferences {
-  speedUnit: SpeedUnits;
-  angleUnit: AngleUnits;
-  distanceUnit: DistanceUnits;
+  [MeasurementTypes.Speed]: SpeedUnits;
+  [MeasurementTypes.Angle]: AngleUnits;
+  [MeasurementTypes.Distance]: DistanceUnits;
 }
 
 type ThemeType = "light" | "dark";
@@ -22,9 +27,9 @@ export interface PreferencesState {
 
 const usePreferencesStore = create<PreferencesState>((set) => ({
   units: {
-    speedUnit: SpeedUnits.MilesPerHour,
-    angleUnit: AngleUnits.Degrees,
-    distanceUnit: DistanceUnits.Yards,
+    [MeasurementTypes.Speed]: SpeedUnits.MilesPerHour,
+    [MeasurementTypes.Angle]: AngleUnits.Degrees,
+    [MeasurementTypes.Distance]: DistanceUnits.Yards,
   },
   theme: "light",
   actions: {

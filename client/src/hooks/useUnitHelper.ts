@@ -1,87 +1,70 @@
 import React from "react";
 import { useUnitPreferences } from "../stores/PreferencesStore";
 import {
-  convertAngle,
-  convertDistance,
-  convertSpeed,
+  MeasurementTypes,
+  MeasurementTypesToConversionFunction,
   MeasurementTypesToStorageUnit,
 } from "../utils/units";
 
-export default function useUnitHelper() {
+export default function useUnitHelper(type: MeasurementTypes) {
   const unitPreferences = useUnitPreferences();
 
-  const toSpeedDisplayUnit = React.useCallback(
+  /**
+   * Given a value in storage units, convert it to display units based on the current user preferences.
+   */
+  const storageToDisplayUnit = React.useCallback(
     (val: number) => {
-      return convertSpeed(
+      // TODO: figure out how to make this type-safe
+      const conversionFunc: any = MeasurementTypesToConversionFunction[type];
+      return conversionFunc(
         val,
-        MeasurementTypesToStorageUnit.speed,
-        unitPreferences.speedUnit
+        MeasurementTypesToStorageUnit[type],
+        unitPreferences[type]
       );
     },
-    [unitPreferences]
+    [unitPreferences, type]
   );
 
-  const toSpeedStorageUnit = React.useCallback(
+  /**
+   * Given a value in display units, convert it to storage units.
+   */
+  const displayToStorageUnit = React.useCallback(
     (val: number) => {
-      return convertSpeed(
+      // TODO: figure out how to make this type-safe
+      const conversionFunc: any = MeasurementTypesToConversionFunction[type];
+      return conversionFunc(
         val,
-        unitPreferences.speedUnit,
-        MeasurementTypesToStorageUnit.speed
+        unitPreferences[type],
+        MeasurementTypesToStorageUnit[type]
       );
     },
-    [unitPreferences]
+    [unitPreferences, type]
   );
 
-  const toAngleDisplayUnit = React.useCallback(
-    (val: number) => {
-      return convertAngle(
-        val,
-        MeasurementTypesToStorageUnit.angle,
-        unitPreferences.angleUnit
-      );
+  /**
+   * Given a value in display units, format it with the specified number of decimal places
+   * and the unit string.
+   */
+  const formatDisplayValue = React.useCallback(
+    (
+      val: number,
+      options?: { decimalPlaces?: number; includeUnits?: boolean }
+    ) => {
+      const opts = { ...DEFAULT_FORMAT_OPTIONS, ...options };
+      const unitsSuffix = opts.includeUnits ? ` ${unitPreferences[type]}` : "";
+      return val.toFixed(opts.decimalPlaces) + unitsSuffix;
     },
-    [unitPreferences]
-  );
-
-  const toAngleStorageUnit = React.useCallback(
-    (val: number) => {
-      return convertAngle(
-        val,
-        unitPreferences.angleUnit,
-        MeasurementTypesToStorageUnit.angle
-      );
-    },
-    [unitPreferences]
-  );
-
-  const toDistanceDisplayUnit = React.useCallback(
-    (val: number) => {
-      return convertDistance(
-        val,
-        MeasurementTypesToStorageUnit.distance,
-        unitPreferences.distanceUnit
-      );
-    },
-    [unitPreferences]
-  );
-
-  const toDistanceStorageUnit = React.useCallback(
-    (val: number) => {
-      return convertDistance(
-        val,
-        unitPreferences.distanceUnit,
-        MeasurementTypesToStorageUnit.distance
-      );
-    },
-    [unitPreferences]
+    [unitPreferences, type]
   );
 
   return {
-    toSpeedDisplayUnit,
-    toSpeedStorageUnit,
-    toAngleDisplayUnit,
-    toAngleStorageUnit,
-    toDistanceDisplayUnit,
-    toDistanceStorageUnit,
+    storageToDisplayUnit,
+    displayToStorageUnit,
+    formatDisplayValue,
   };
 }
+
+const DEFAULT_FORMAT_OPTIONS = {
+  decimalPlaces: 1,
+  includeUnits: true,
+};
