@@ -12,7 +12,7 @@ export interface UnitPreferences {
   [MeasurementTypes.Distance]: DistanceUnits;
 }
 
-type ThemeType = "light" | "dark";
+export type ThemeType = "light" | "dark";
 
 export interface PreferencesState {
   units: UnitPreferences;

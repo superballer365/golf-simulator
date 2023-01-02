@@ -11,101 +11,137 @@ import {
 import useUnitHelper from "./hooks/useUnitHelper";
 import { DistanceUnits, MeasurementTypes } from "./utils/units";
 import {
+  ThemeType,
   usePreferencesActions,
+  useTheme,
   useUnitPreferences,
 } from "./stores/PreferencesStore";
+import {
+  Box,
+  Button,
+  Text,
+  MantineProvider,
+  Container,
+  Select,
+  SegmentedControl,
+} from "@mantine/core";
 
 export default function App() {
   const simulationStatus = useSimulationStatus();
   const ballPosition = useBallPosition();
+  const theme = useTheme();
+  const unitPreferences = useUnitPreferences();
+  const { start, reset } = useSimulationActions();
+  const { updateUnitPreferences, updateTheme } = usePreferencesActions();
   const { storageToDisplayUnit, formatDisplayValue } = useUnitHelper(
     MeasurementTypes.Distance
   );
-  const { start, reset } = useSimulationActions();
-  const unitPreferences = useUnitPreferences();
-  const { updateUnitPreferences } = usePreferencesActions();
 
   const [showSettings, setShowSettings] = React.useState(false);
 
   return (
-    <div
-      tabIndex={0}
-      style={{ width: "100%", height: "100%", backgroundColor: "black" }}
+    <MantineProvider
+      theme={{ colorScheme: theme }}
+      withGlobalStyles
+      withNormalizeCSS
     >
-      <div style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
-        <button onClick={reset}>Reset</button>
-        <button
-          onClick={start}
-          disabled={simulationStatus !== SimulationStatus.NotStarted}
-        >
-          Start
-        </button>
-        <div
-          style={{
-            marginTop: "0.25rem",
-            padding: "0.5rem",
-            backgroundColor: "white",
+      <Box h="100%" w="100%" bg="black" tabIndex={0}>
+        <Box pos="absolute" mt="xs" ml="xs" sx={{ zIndex: 10 }}>
+          <Button mr="xs" onClick={reset}>
+            Reset
+          </Button>
+          <Button
+            color="green"
+            onClick={start}
+            disabled={simulationStatus !== SimulationStatus.NotStarted}
+          >
+            Start
+          </Button>
+          <Box
+            mt="xs"
+            p="xs"
+            sx={(theme) => ({
+              backgroundColor:
+                theme.colorScheme === "dark"
+                  ? theme.colors.dark[5]
+                  : theme.colors.gray[0],
+            })}
+          >
+            <Text>
+              {formatDisplayValue(storageToDisplayUnit(ballPosition.x))}
+            </Text>
+          </Box>
+        </Box>
+        <Box
+          pos="absolute"
+          display="flex"
+          top={0}
+          right={0}
+          mt="xs"
+          mr="xs"
+          sx={{
+            flexDirection: "column",
+            alignItems: "flex-end",
+            zIndex: 10,
           }}
         >
-          {formatDisplayValue(storageToDisplayUnit(ballPosition.x))}
-        </div>
-      </div>
-      <div
-        style={{
-          position: "absolute",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-          top: 10,
-          right: 10,
-          zIndex: 10,
-        }}
-      >
-        <button
-          style={{ width: "min-content" }}
-          onClick={() => setShowSettings((prev) => !prev)}
-        >
-          Settings
-        </button>
-        {showSettings && (
-          <div
-            style={{
-              marginTop: "0.25rem",
-              padding: "0.5rem",
-              backgroundColor: "white",
-            }}
+          <Button
+            sx={{ width: "min-content" }}
+            onClick={() => setShowSettings((prev) => !prev)}
           >
-            <label htmlFor="distanceUnits">Distance:</label>
-            <select
-              value={unitPreferences[MeasurementTypes.Distance]}
-              onChange={(e) =>
-                updateUnitPreferences({
-                  [MeasurementTypes.Distance]: e.target.value as DistanceUnits,
-                })
-              }
+            Settings
+          </Button>
+          {showSettings && (
+            <Container
+              mt="xs"
+              p="xs"
+              sx={(theme) => ({
+                backgroundColor:
+                  theme.colorScheme === "dark"
+                    ? theme.colors.dark[5]
+                    : theme.colors.gray[0],
+              })}
             >
-              {Object.values(DistanceUnits).map((unit) => (
-                <option key={unit} value={unit}>
-                  {unit}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-      </div>
-      <Canvas camera={{ position: [0, 0, 50] }}>
-        <primitive object={new THREE.AxesHelper(10)} />
-        <primitive
-          object={new THREE.GridHelper(100)}
-          rotation={[Math.PI / 2, 0, 0]}
-        />
-        <GolfBall />
-        <PhysicsTicker />
-        <color attach="background" args={["black"]} />
-        <ambientLight />
-        <pointLight position={[10, 10, 10]} />
-      </Canvas>
-    </div>
+              <SegmentedControl
+                value={theme}
+                data={[
+                  { label: "Light", value: "light" },
+                  { label: "Dark", value: "dark" },
+                ]}
+                onChange={(val) => updateTheme(val as ThemeType)}
+              />
+              <Select
+                label="Distance:"
+                value={unitPreferences[MeasurementTypes.Distance]}
+                onChange={(val) =>
+                  val &&
+                  updateUnitPreferences({
+                    [MeasurementTypes.Distance]: val as DistanceUnits,
+                  })
+                }
+                data={Object.values(DistanceUnits)}
+              />
+            </Container>
+          )}
+        </Box>
+        <Canvas camera={{ position: [0, 0, 50] }}>
+          {/* NOTE: we may need to introduce a context bridge at some point if we need to use
+          information from the matinine context INSIDE of the canvas. We don't have this need
+          just yet. See here for more info: 
+          https://standard.ai/blog/introducing-standard-view-and-react-three-fiber-context-bridge/ */}
+          <primitive object={new THREE.AxesHelper(10)} />
+          <primitive
+            object={new THREE.GridHelper(100)}
+            rotation={[Math.PI / 2, 0, 0]}
+          />
+          <GolfBall />
+          <PhysicsTicker />
+          <color attach="background" args={["black"]} />
+          <ambientLight />
+          <pointLight position={[10, 10, 10]} />
+        </Canvas>
+      </Box>
+    </MantineProvider>
   );
 }
 
