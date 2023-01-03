@@ -42,10 +42,7 @@ const useSimulationStore = create<SimulationState>((set) => ({
       set((state) => {
         // start is a no-op if the simulation is in progress or completed
         if (state.status !== SimulationStatus.NotStarted) return state;
-        console.log(
-          "setting launch conditions to: ",
-          JSON.stringify(launchConditions)
-        );
+
         return {
           status: SimulationStatus.InProgress,
           launchConditions: { ...state.launchConditions, ...launchConditions },
