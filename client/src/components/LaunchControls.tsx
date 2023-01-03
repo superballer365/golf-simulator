@@ -1,6 +1,7 @@
 import { Button, TextInput } from "@mantine/core";
 import { useState } from "react";
 import useUnitHelper from "../hooks/useUnitHelper";
+import { useUnitPreferences } from "../stores/PreferencesStore";
 
 import {
   SimulationStatus,
@@ -14,6 +15,7 @@ import { MeasurementTypes } from "../utils/units";
 export default function LaunchControls() {
   const simulationStatus = useSimulationStatus();
   const launchConditions = useLaunchConditions();
+  const unitPreferences = useUnitPreferences();
   const {
     displayToStorageUnit: angleDisplayToStorageUnit,
     storageToDisplayUnit: angleStorageToDisplayUnit,
@@ -38,13 +40,13 @@ export default function LaunchControls() {
   return (
     <>
       <TextInput
-        label={"Ball speed (mph)"}
+        label={`Ball speed (${unitPreferences.speed})`}
         value={speed}
         onChange={(event) => setSpeed(event.currentTarget.value)}
         sx={(theme) => stylesWithThemedLabelColor(theme)}
       />
       <TextInput
-        label={"Launch angle (degrees)"}
+        label={`Launch angle (${unitPreferences.angle})`}
         value={verticalAngle}
         onChange={(event) => setVerticalAngle(event.currentTarget.value)}
         sx={(theme) => stylesWithThemedLabelColor(theme)}

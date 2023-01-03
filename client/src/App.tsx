@@ -7,7 +7,12 @@ import {
   useSimulationActions,
 } from "./stores/SimulationStore";
 import useUnitHelper from "./hooks/useUnitHelper";
-import { DistanceUnits, MeasurementTypes } from "./utils/units";
+import {
+  AngleUnits,
+  DistanceUnits,
+  MeasurementTypes,
+  SpeedUnits,
+} from "./utils/units";
 import {
   ThemeType,
   usePreferencesActions,
@@ -99,6 +104,28 @@ export default function App() {
                   })
                 }
                 data={Object.values(DistanceUnits)}
+              />
+              <Select
+                label="Speed:"
+                value={unitPreferences[MeasurementTypes.Speed]}
+                onChange={(val) =>
+                  val &&
+                  updateUnitPreferences({
+                    [MeasurementTypes.Speed]: val as SpeedUnits,
+                  })
+                }
+                data={Object.values(SpeedUnits)}
+              />
+              <Select
+                label="Angle:"
+                value={unitPreferences[MeasurementTypes.Angle]}
+                onChange={(val) =>
+                  val &&
+                  updateUnitPreferences({
+                    [MeasurementTypes.Angle]: val as AngleUnits,
+                  })
+                }
+                data={Object.values(AngleUnits)}
               />
             </Container>
           )}
