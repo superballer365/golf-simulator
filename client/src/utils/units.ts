@@ -10,8 +10,8 @@ export enum AngleUnits {
 }
 
 export enum SpeedUnits {
-  MilesPerHour = "milesPerHour",
-  MetersPerSecond = "metersPerSecond",
+  MilesPerHour = "mph",
+  MetersPerSecond = "m/s",
 }
 
 export enum DistanceUnits {

@@ -3,13 +3,16 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import GolfBall from "./components/GolfBall";
 import {
-  SimulationStatus,
   useBallPosition,
   useSimulationActions,
-  useSimulationStatus,
 } from "./stores/SimulationStore";
 import useUnitHelper from "./hooks/useUnitHelper";
-import { DistanceUnits, MeasurementTypes } from "./utils/units";
+import {
+  AngleUnits,
+  DistanceUnits,
+  MeasurementTypes,
+  SpeedUnits,
+} from "./utils/units";
 import {
   ThemeType,
   usePreferencesActions,
@@ -19,19 +22,19 @@ import {
 import {
   Box,
   Button,
-  Text,
-  MantineProvider,
   Container,
-  Select,
+  MantineProvider,
   SegmentedControl,
+  Select,
+  Text,
 } from "@mantine/core";
+import LaunchControls from "./components/LaunchControls";
+import { stylesWithThemedBackgroundColor } from "./utils/styles";
 
 export default function App() {
-  const simulationStatus = useSimulationStatus();
   const ballPosition = useBallPosition();
   const theme = useTheme();
   const unitPreferences = useUnitPreferences();
-  const { start, reset } = useSimulationActions();
   const { updateUnitPreferences, updateTheme } = usePreferencesActions();
   const { storageToDisplayUnit, formatDisplayValue } = useUnitHelper(
     MeasurementTypes.Distance
@@ -47,25 +50,11 @@ export default function App() {
     >
       <Box h="100%" w="100%" bg="black" tabIndex={0}>
         <Box pos="absolute" mt="xs" ml="xs" sx={{ zIndex: 10 }}>
-          <Button mr="xs" onClick={reset}>
-            Reset
-          </Button>
-          <Button
-            color="green"
-            onClick={start}
-            disabled={simulationStatus !== SimulationStatus.NotStarted}
-          >
-            Start
-          </Button>
+          <LaunchControls />
           <Box
             mt="xs"
             p="xs"
-            sx={(theme) => ({
-              backgroundColor:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[5]
-                  : theme.colors.gray[0],
-            })}
+            sx={(theme) => stylesWithThemedBackgroundColor(theme)}
           >
             <Text>
               {formatDisplayValue(storageToDisplayUnit(ballPosition.x))}
@@ -95,12 +84,7 @@ export default function App() {
             <Container
               mt="xs"
               p="xs"
-              sx={(theme) => ({
-                backgroundColor:
-                  theme.colorScheme === "dark"
-                    ? theme.colors.dark[5]
-                    : theme.colors.gray[0],
-              })}
+              sx={(theme) => stylesWithThemedBackgroundColor(theme)}
             >
               <SegmentedControl
                 value={theme}
@@ -120,6 +104,28 @@ export default function App() {
                   })
                 }
                 data={Object.values(DistanceUnits)}
+              />
+              <Select
+                label="Speed:"
+                value={unitPreferences[MeasurementTypes.Speed]}
+                onChange={(val) =>
+                  val &&
+                  updateUnitPreferences({
+                    [MeasurementTypes.Speed]: val as SpeedUnits,
+                  })
+                }
+                data={Object.values(SpeedUnits)}
+              />
+              <Select
+                label="Angle:"
+                value={unitPreferences[MeasurementTypes.Angle]}
+                onChange={(val) =>
+                  val &&
+                  updateUnitPreferences({
+                    [MeasurementTypes.Angle]: val as AngleUnits,
+                  })
+                }
+                data={Object.values(AngleUnits)}
               />
             </Container>
           )}

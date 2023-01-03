@@ -21,7 +21,7 @@ export interface SimulationState {
   ballPosition: THREE.Vector3;
   launchConditions: LaunchConditions;
   actions: {
-    start: () => void;
+    start: (launchConditions?: Partial<LaunchConditions>) => void;
     complete: () => void;
     reset: () => void;
     updateLaunchConditions: (newConditions: Partial<LaunchConditions>) => void;
@@ -38,12 +38,15 @@ const useSimulationStore = create<SimulationState>((set) => ({
     verticalAngle: 0.5236, // 30 degrees
   },
   actions: {
-    start: () =>
+    start: (launchConditions?: Partial<LaunchConditions>) =>
       set((state) => {
         // start is a no-op if the simulation is in progress or completed
         if (state.status !== SimulationStatus.NotStarted) return state;
 
-        return { status: SimulationStatus.InProgress };
+        return {
+          status: SimulationStatus.InProgress,
+          launchConditions: { ...state.launchConditions, ...launchConditions },
+        };
       }),
     complete: () => set({ status: SimulationStatus.Complete }),
     reset: () =>
