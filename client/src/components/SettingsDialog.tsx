@@ -1,6 +1,7 @@
 import { Container, SegmentedControl, Select } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
 import React from "react";
+import useHTMLElementList from "../hooks/useHTMLElementList";
 import {
   ThemeType,
   usePreferencesActions,
@@ -25,27 +26,16 @@ export default function SettingsDialog({ onClose }: SettingsDialogProps) {
 
   const { updateUnitPreferences, updateTheme } = usePreferencesActions();
 
-  const [container, setContainer] = React.useState<HTMLDivElement | null>(null);
-  const [distanceUnitInput, setDistanceUnitInput] =
-    React.useState<HTMLInputElement | null>(null);
-  const [speedUnitInput, setSpeedUnitInput] =
-    React.useState<HTMLInputElement | null>(null);
-  const [angleUnitInput, setAngleUnitInput] =
-    React.useState<HTMLInputElement | null>(null);
+  const { register, data: internalHTMLNodes } = useHTMLElementList();
 
-  useClickOutside(() => onClose?.(), undefined, [
-    container,
-    distanceUnitInput,
-    speedUnitInput,
-    angleUnitInput,
-  ]);
+  useClickOutside(() => onClose?.(), undefined, internalHTMLNodes);
 
   return (
     <Container
       mt="xs"
       p="xs"
       sx={(theme) => stylesWithThemedBackgroundColor(theme)}
-      ref={setContainer}
+      {...register("container")}
     >
       <SegmentedControl
         value={theme}
@@ -65,7 +55,7 @@ export default function SettingsDialog({ onClose }: SettingsDialogProps) {
           })
         }
         data={Object.values(DistanceUnits)}
-        ref={setDistanceUnitInput}
+        {...register("distance")}
       />
       <Select
         label="Speed:"
@@ -77,7 +67,7 @@ export default function SettingsDialog({ onClose }: SettingsDialogProps) {
           })
         }
         data={Object.values(SpeedUnits)}
-        ref={setSpeedUnitInput}
+        {...register("speed")}
       />
       <Select
         label="Angle:"
@@ -89,7 +79,7 @@ export default function SettingsDialog({ onClose }: SettingsDialogProps) {
           })
         }
         data={Object.values(AngleUnits)}
-        ref={setAngleUnitInput}
+        {...register("angle")}
       />
     </Container>
   );
