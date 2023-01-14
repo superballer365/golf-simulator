@@ -1,12 +1,17 @@
 import React from "react";
 
 export interface UseHTMLElementListReturnType {
-  /** Registration function. Returns a ref callback that will add any element
-   * that calls it to the list. Should be provided as props like:
+  /**
    *
-   * <MyComponent {...register("MyComponentId")} />
+   * Registration function.
+   * @param elementId unique id for the HTML element
+   * @returns props to be added to the component you'd
+   * like to register. Should be spread alongside other component props like:
+   *
+   * `<MyComponent randomProp="foo" {...register("MyComponentId")} />`
    */
   register: (elementId: string) => {
+    id: string;
     ref: (elementRef: HTMLElement | null) => void;
   };
   /**
@@ -18,9 +23,11 @@ export interface UseHTMLElementListReturnType {
 }
 
 /**
- * Utility hook for maintaining a list of references to HTMLElements.
+ * Utility hook for maintaining a list of references to HTMLElements. Useful
+ * for maintaining an arbitrary number of element refs, which can be difficult
+ * to do with `React.useState`
  *
- * @returns a register callback and a list of HTMLElements
+ * @returns a registration function and the list of registered HTMLElement refs
  */
 export default function useHTMLElementList(): UseHTMLElementListReturnType {
   const [idToElementMap, setIdToElementMap] = React.useState<
@@ -45,6 +52,7 @@ export default function useHTMLElementList(): UseHTMLElementListReturnType {
   const register = React.useCallback(
     (elementId: string) => {
       return {
+        id: elementId,
         ref: (elementRef: HTMLElement | null) =>
           refCallback(elementId, elementRef),
       };

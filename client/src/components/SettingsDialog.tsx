@@ -35,7 +35,7 @@ export default function SettingsDialog({ onClose }: SettingsDialogProps) {
       mt="xs"
       p="xs"
       sx={(theme) => stylesWithThemedBackgroundColor(theme)}
-      {...register("container")}
+      {...register("settingsContainer")}
     >
       <SegmentedControl
         value={theme}
@@ -55,7 +55,7 @@ export default function SettingsDialog({ onClose }: SettingsDialogProps) {
           })
         }
         data={Object.values(DistanceUnits)}
-        {...register("distance")}
+        {...register("distanceUnitSelect")}
       />
       <Select
         label="Speed:"
@@ -67,7 +67,7 @@ export default function SettingsDialog({ onClose }: SettingsDialogProps) {
           })
         }
         data={Object.values(SpeedUnits)}
-        {...register("speed")}
+        {...register("speedUnitSelect")}
       />
       <Select
         label="Angle:"
@@ -79,7 +79,7 @@ export default function SettingsDialog({ onClose }: SettingsDialogProps) {
           })
         }
         data={Object.values(AngleUnits)}
-        {...register("angle")}
+        {...register("angleUnitSelect")}
       />
     </Container>
   );
