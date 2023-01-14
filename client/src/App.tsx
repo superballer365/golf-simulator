@@ -62,7 +62,7 @@ export default function App() {
             color="blue.4"
             onClick={() => setShowSettings(true)}
           >
-            <FontAwesomeIcon color="" icon={faGear} />
+            <FontAwesomeIcon icon={faGear} />
           </ActionIcon>
           {showSettings && (
             <SettingsDialog onClose={() => setShowSettings(false)} />
