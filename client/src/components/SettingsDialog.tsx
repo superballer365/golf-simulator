@@ -1,7 +1,5 @@
 import { Container, SegmentedControl, Select } from "@mantine/core";
-import { useClickOutside } from "@mantine/hooks";
-import React from "react";
-import useHTMLElementList from "../hooks/useHTMLElementList";
+import useClickOutside from "../hooks/useOutsideClick";
 import {
   ThemeType,
   usePreferencesActions,
@@ -26,9 +24,7 @@ export default function SettingsDialog({ onClose }: SettingsDialogProps) {
 
   const { updateUnitPreferences, updateTheme } = usePreferencesActions();
 
-  const { register, data: internalHTMLNodes } = useHTMLElementList();
-
-  useClickOutside(() => onClose?.(), undefined, internalHTMLNodes);
+  const register = useClickOutside(() => onClose?.());
 
   return (
     <Container
