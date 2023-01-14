@@ -7,35 +7,18 @@ import {
   useSimulationActions,
 } from "./stores/SimulationStore";
 import useUnitHelper from "./hooks/useUnitHelper";
-import {
-  AngleUnits,
-  DistanceUnits,
-  MeasurementTypes,
-  SpeedUnits,
-} from "./utils/units";
-import {
-  ThemeType,
-  usePreferencesActions,
-  useTheme,
-  useUnitPreferences,
-} from "./stores/PreferencesStore";
-import {
-  Box,
-  Button,
-  Container,
-  MantineProvider,
-  SegmentedControl,
-  Select,
-  Text,
-} from "@mantine/core";
+import { MeasurementTypes } from "./utils/units";
+import { useTheme } from "./stores/PreferencesStore";
+import { ActionIcon, Box, MantineProvider, Text } from "@mantine/core";
 import LaunchControls from "./components/LaunchControls";
 import { stylesWithThemedBackgroundColor } from "./utils/styles";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGear } from "@fortawesome/free-solid-svg-icons";
+import SettingsDialog from "./components/SettingsDialog";
 
 export default function App() {
   const ballPosition = useBallPosition();
   const theme = useTheme();
-  const unitPreferences = useUnitPreferences();
-  const { updateUnitPreferences, updateTheme } = usePreferencesActions();
   const { storageToDisplayUnit, formatDisplayValue } = useUnitHelper(
     MeasurementTypes.Distance
   );
@@ -74,60 +57,15 @@ export default function App() {
             zIndex: 10,
           }}
         >
-          <Button
-            sx={{ width: "min-content" }}
-            onClick={() => setShowSettings((prev) => !prev)}
+          <ActionIcon
+            variant="transparent"
+            color="blue.4"
+            onClick={() => setShowSettings(true)}
           >
-            Settings
-          </Button>
+            <FontAwesomeIcon color="" icon={faGear} />
+          </ActionIcon>
           {showSettings && (
-            <Container
-              mt="xs"
-              p="xs"
-              sx={(theme) => stylesWithThemedBackgroundColor(theme)}
-            >
-              <SegmentedControl
-                value={theme}
-                data={[
-                  { label: "Light", value: "light" },
-                  { label: "Dark", value: "dark" },
-                ]}
-                onChange={(val) => updateTheme(val as ThemeType)}
-              />
-              <Select
-                label="Distance:"
-                value={unitPreferences[MeasurementTypes.Distance]}
-                onChange={(val) =>
-                  val &&
-                  updateUnitPreferences({
-                    [MeasurementTypes.Distance]: val as DistanceUnits,
-                  })
-                }
-                data={Object.values(DistanceUnits)}
-              />
-              <Select
-                label="Speed:"
-                value={unitPreferences[MeasurementTypes.Speed]}
-                onChange={(val) =>
-                  val &&
-                  updateUnitPreferences({
-                    [MeasurementTypes.Speed]: val as SpeedUnits,
-                  })
-                }
-                data={Object.values(SpeedUnits)}
-              />
-              <Select
-                label="Angle:"
-                value={unitPreferences[MeasurementTypes.Angle]}
-                onChange={(val) =>
-                  val &&
-                  updateUnitPreferences({
-                    [MeasurementTypes.Angle]: val as AngleUnits,
-                  })
-                }
-                data={Object.values(AngleUnits)}
-              />
-            </Container>
+            <SettingsDialog onClose={() => setShowSettings(false)} />
           )}
         </Box>
         <Canvas camera={{ position: [0, 0, 50] }}>
