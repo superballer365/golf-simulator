@@ -1,22 +1,13 @@
 import create from "zustand";
 import {
-  AngleUnits,
-  DistanceUnits,
-  MeasurementTypes,
-  SpeedUnits,
-} from "../utils/units";
+  Preferences,
+  UnitPreferences,
+  ThemeType,
+  getStoredPreferences,
+  updateStoredPreferences,
+} from "../utils/preferences";
 
-export interface UnitPreferences {
-  [MeasurementTypes.Speed]: SpeedUnits;
-  [MeasurementTypes.Angle]: AngleUnits;
-  [MeasurementTypes.Distance]: DistanceUnits;
-}
-
-export type ThemeType = "light" | "dark";
-
-export interface PreferencesState {
-  units: UnitPreferences;
-  theme: ThemeType;
+export interface PreferencesState extends Preferences {
   actions: {
     updateUnitPreferences: (
       newUnitPreferences: Partial<UnitPreferences>
@@ -26,16 +17,32 @@ export interface PreferencesState {
 }
 
 const usePreferencesStore = create<PreferencesState>((set) => ({
-  units: {
-    [MeasurementTypes.Speed]: SpeedUnits.MilesPerHour,
-    [MeasurementTypes.Angle]: AngleUnits.Degrees,
-    [MeasurementTypes.Distance]: DistanceUnits.Yards,
-  },
-  theme: "light",
+  units: getStoredPreferences().units,
+  theme: getStoredPreferences().theme,
   actions: {
     updateUnitPreferences: (newUnitPreferences: Partial<UnitPreferences>) =>
-      set((state) => ({ units: { ...state.units, ...newUnitPreferences } })),
-    updateTheme: (newTheme: ThemeType) => set({ theme: newTheme }),
+      set((state) => {
+        const newState: PreferencesState = {
+          ...state,
+          units: {
+            ...state.units,
+            ...newUnitPreferences,
+          },
+        };
+
+        updateStoredPreferences(newState);
+        return newState;
+      }),
+    updateTheme: (newTheme: ThemeType) =>
+      set((state) => {
+        const newState: PreferencesState = {
+          ...state,
+          theme: newTheme,
+        };
+
+        updateStoredPreferences(newState);
+        return newState;
+      }),
   },
 }));
 
