@@ -1,11 +1,11 @@
 import { Container, SegmentedControl, Select } from "@mantine/core";
 import useClickOutside from "../hooks/useOutsideClick";
 import {
-  ThemeType,
   usePreferencesActions,
   useTheme,
   useUnitPreferences,
 } from "../stores/PreferencesStore";
+import { ThemeType } from "../utils/preferences";
 import { stylesWithThemedBackgroundColor } from "../utils/styles";
 import {
   MeasurementTypes,
