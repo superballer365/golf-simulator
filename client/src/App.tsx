@@ -15,6 +15,7 @@ import { stylesWithThemedBackgroundColor } from "./utils/styles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 import SettingsDialog from "./components/SettingsDialog";
+import Overlay from "./components/Overlay";
 
 export default function App() {
   const ballPosition = useBallPosition();
@@ -31,59 +32,62 @@ export default function App() {
       withGlobalStyles
       withNormalizeCSS
     >
-      <Box h="100%" w="100%" bg="black" tabIndex={0}>
-        <Box pos="absolute" mt="xs" ml="xs" sx={{ zIndex: 10 }}>
-          <LaunchControls />
-          <Box
-            mt="xs"
-            p="xs"
-            sx={(theme) => stylesWithThemedBackgroundColor(theme)}
-          >
-            <Text>
-              {formatDisplayValue(storageToDisplayUnit(ballPosition.x))}
-            </Text>
-          </Box>
-        </Box>
-        <Box
-          pos="absolute"
-          display="flex"
-          top={0}
-          right={0}
-          mt="xs"
-          mr="xs"
-          sx={{
-            flexDirection: "column",
-            alignItems: "flex-end",
-            zIndex: 10,
-          }}
+      <Box id="rootContainer" h="100%" w="100%" bg="black">
+        <Overlay
+          topLeft={<LaunchControls />}
+          topCenter={
+            <Box
+              p="xs"
+              sx={(theme) =>
+                stylesWithThemedBackgroundColor(theme, {
+                  textAlign: "center",
+                  minWidth: "7rem",
+                })
+              }
+            >
+              <Text>
+                {formatDisplayValue(storageToDisplayUnit(ballPosition.x))}
+              </Text>
+            </Box>
+          }
+          topRight={
+            <Box
+              display="flex"
+              sx={{
+                flexDirection: "column",
+                alignItems: "flex-end",
+              }}
+            >
+              <ActionIcon
+                variant="transparent"
+                color="blue.4"
+                onClick={() => setShowSettings(!showSettings)}
+              >
+                <FontAwesomeIcon icon={faGear} />
+              </ActionIcon>
+              {showSettings && (
+                <SettingsDialog onClose={() => setShowSettings(false)} />
+              )}
+            </Box>
+          }
         >
-          <ActionIcon
-            variant="transparent"
-            color="blue.4"
-            onClick={() => setShowSettings(true)}
-          >
-            <FontAwesomeIcon icon={faGear} />
-          </ActionIcon>
-          {showSettings && (
-            <SettingsDialog onClose={() => setShowSettings(false)} />
-          )}
-        </Box>
-        <Canvas camera={{ position: [0, 0, 50] }}>
-          {/* NOTE: we may need to introduce a context bridge at some point if we need to use
+          <Canvas camera={{ position: [0, 0, 50] }}>
+            {/* NOTE: we may need to introduce a context bridge at some point if we need to use
           information from the matinine context INSIDE of the canvas. We don't have this need
           just yet. See here for more info: 
           https://standard.ai/blog/introducing-standard-view-and-react-three-fiber-context-bridge/ */}
-          <primitive object={new THREE.AxesHelper(10)} />
-          <primitive
-            object={new THREE.GridHelper(100)}
-            rotation={[Math.PI / 2, 0, 0]}
-          />
-          <GolfBall />
-          <PhysicsTicker />
-          <color attach="background" args={["black"]} />
-          <ambientLight />
-          <pointLight position={[10, 10, 10]} />
-        </Canvas>
+            <primitive object={new THREE.AxesHelper(10)} />
+            <primitive
+              object={new THREE.GridHelper(100)}
+              rotation={[Math.PI / 2, 0, 0]}
+            />
+            <GolfBall />
+            <PhysicsTicker />
+            <color attach="background" args={["black"]} />
+            <ambientLight />
+            <pointLight position={[10, 10, 10]} />
+          </Canvas>
+        </Overlay>
       </Box>
     </MantineProvider>
   );
