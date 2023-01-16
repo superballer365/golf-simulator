@@ -1,27 +1,16 @@
-import React from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import GolfBall from "./components/GolfBall";
-import {
-  useBallPosition,
-  useSimulationActions,
-} from "./stores/SimulationStore";
-import useUnitHelper from "./hooks/useUnitHelper";
-import { MeasurementTypes } from "./utils/units";
+import { useSimulationActions } from "./stores/SimulationStore";
 import { useTheme } from "./stores/PreferencesStore";
-import { ActionIcon, Box, MantineProvider, Text } from "@mantine/core";
+import { Box, MantineProvider } from "@mantine/core";
 import LaunchControls from "./components/LaunchControls";
-import { stylesWithThemedBackgroundColor } from "./utils/styles";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGear } from "@fortawesome/free-solid-svg-icons";
-import SettingsDialog from "./components/SettingsDialog";
 import Overlay from "./components/Overlay";
 import CarryTracker from "./components/CarryTracker";
+import SettingsControls from "./components/SettingsControls";
 
 export default function App() {
   const theme = useTheme();
-
-  const [showSettings, setShowSettings] = React.useState(false);
 
   return (
     <MantineProvider
@@ -33,26 +22,7 @@ export default function App() {
         <Overlay
           topLeft={<LaunchControls />}
           topCenter={<CarryTracker />}
-          topRight={
-            <Box
-              display="flex"
-              sx={{
-                flexDirection: "column",
-                alignItems: "flex-end",
-              }}
-            >
-              <ActionIcon
-                variant="transparent"
-                color="blue.4"
-                onClick={() => setShowSettings(!showSettings)}
-              >
-                <FontAwesomeIcon icon={faGear} />
-              </ActionIcon>
-              {showSettings && (
-                <SettingsDialog onClose={() => setShowSettings(false)} />
-              )}
-            </Box>
-          }
+          topRight={<SettingsControls />}
         >
           <Canvas camera={{ position: [0, 0, 50] }}>
             {/* NOTE: we may need to introduce a context bridge at some point if we need to use

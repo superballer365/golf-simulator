@@ -1,12 +1,13 @@
-import { Container, SegmentedControl, Select } from "@mantine/core";
-import useClickOutside from "../hooks/useOutsideClick";
+import React from "react";
+import { faGear } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ActionIcon, Popover, SegmentedControl, Select } from "@mantine/core";
 import {
   usePreferencesActions,
   useTheme,
   useUnitPreferences,
 } from "../stores/PreferencesStore";
 import { ThemeType } from "../utils/preferences";
-import { stylesWithThemedBackgroundColor } from "../utils/styles";
 import {
   MeasurementTypes,
   DistanceUnits,
@@ -14,25 +15,35 @@ import {
   AngleUnits,
 } from "../utils/units";
 
-interface SettingsDialogProps {
-  onClose?: () => void;
+export default function SettingsControls() {
+  const [showSettings, setShowSettings] = React.useState(false);
+
+  return (
+    <Popover opened={showSettings} withArrow onChange={setShowSettings}>
+      <Popover.Target>
+        <ActionIcon
+          variant="transparent"
+          color="blue.4"
+          onClick={() => setShowSettings(!showSettings)}
+        >
+          <FontAwesomeIcon icon={faGear} />
+        </ActionIcon>
+      </Popover.Target>
+      <Popover.Dropdown>
+        <SettingsDialog />
+      </Popover.Dropdown>
+    </Popover>
+  );
 }
 
-export default function SettingsDialog({ onClose }: SettingsDialogProps) {
+function SettingsDialog() {
   const theme = useTheme();
   const unitPreferences = useUnitPreferences();
 
   const { updateUnitPreferences, updateTheme } = usePreferencesActions();
 
-  const register = useClickOutside(() => onClose?.());
-
   return (
-    <Container
-      mt="xs"
-      p="xs"
-      sx={(theme) => stylesWithThemedBackgroundColor(theme)}
-      {...register("settingsContainer")}
-    >
+    <>
       <SegmentedControl
         value={theme}
         data={[
@@ -51,7 +62,6 @@ export default function SettingsDialog({ onClose }: SettingsDialogProps) {
           })
         }
         data={Object.values(DistanceUnits)}
-        {...register("distanceUnitSelect")}
       />
       <Select
         label="Speed:"
@@ -63,7 +73,6 @@ export default function SettingsDialog({ onClose }: SettingsDialogProps) {
           })
         }
         data={Object.values(SpeedUnits)}
-        {...register("speedUnitSelect")}
       />
       <Select
         label="Angle:"
@@ -75,8 +84,7 @@ export default function SettingsDialog({ onClose }: SettingsDialogProps) {
           })
         }
         data={Object.values(AngleUnits)}
-        {...register("angleUnitSelect")}
       />
-    </Container>
+    </>
   );
 }
