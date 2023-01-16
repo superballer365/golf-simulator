@@ -22,8 +22,8 @@ export default function SettingsControls() {
     <Popover opened={showSettings} withArrow onChange={setShowSettings}>
       <Popover.Target>
         <ActionIcon
-          variant="transparent"
-          color="blue.4"
+          variant="filled"
+          color="blue.5"
           onClick={() => setShowSettings(!showSettings)}
         >
           <FontAwesomeIcon icon={faGear} />

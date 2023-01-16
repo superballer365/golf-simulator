@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import GolfBall from "./components/GolfBall";
 import { useSimulationActions } from "./stores/SimulationStore";
@@ -8,6 +8,8 @@ import LaunchControls from "./components/LaunchControls";
 import Overlay from "./components/Overlay";
 import CarryTracker from "./components/CarryTracker";
 import SettingsControls from "./components/SettingsControls";
+import { OrbitControls, Sky } from "@react-three/drei";
+import Ground from "./components/Ground";
 
 export default function App() {
   const theme = useTheme();
@@ -24,21 +26,27 @@ export default function App() {
           topCenter={<CarryTracker />}
           topRight={<SettingsControls />}
         >
-          <Canvas camera={{ position: [0, 0, 50] }}>
+          <Canvas camera={{ position: [0, 3, 50] }}>
             {/* NOTE: we may need to introduce a context bridge at some point if we need to use
           information from the matinine context INSIDE of the canvas. We don't have this need
           just yet. See here for more info: 
           https://standard.ai/blog/introducing-standard-view-and-react-three-fiber-context-bridge/ */}
-            <primitive object={new THREE.AxesHelper(10)} />
+            <OrbitControls />
+            <ambientLight />
+            <Sky
+              distance={450000}
+              sunPosition={[5, 1, 8]}
+              inclination={0}
+              azimuth={0.25}
+            />
+            <Ground />
+            <GolfBall />
+            <PhysicsTicker />
+            {/* <primitive object={new THREE.AxesHelper(10)} />
             <primitive
               object={new THREE.GridHelper(100)}
               rotation={[Math.PI / 2, 0, 0]}
-            />
-            <GolfBall />
-            <PhysicsTicker />
-            <color attach="background" args={["black"]} />
-            <ambientLight />
-            <pointLight position={[10, 10, 10]} />
+            /> */}
           </Canvas>
         </Overlay>
       </Box>

@@ -1,5 +1,8 @@
-import { Box } from "@mantine/core";
+import { Box, BoxProps, CSSObject } from "@mantine/core";
 import React from "react";
+
+const BASE_Z_INDEX = 1;
+const OVERLAY_ITEM_Z_INDEX = 2;
 
 interface OverlayProps {
   topLeft?: JSX.Element;
@@ -20,49 +23,57 @@ export default function Overlay({
   children,
 }: React.PropsWithChildren<OverlayProps>) {
   return (
-    <Box pos="relative" h="100%" w="100%">
-      <Box
-        id="container"
-        pos="absolute"
-        h="100%"
-        w="100%"
-        p="xs"
-        sx={{ zIndex: 10 }}
-      >
+    <Box pos="relative" h="100%" w="100%" sx={{ zIndex: BASE_Z_INDEX }}>
+      <Box id="container" pos="absolute" h="100%" w="100%" p="xs">
         <Box id="overlay" pos="relative" h="100%" w="100%">
-          <Box id="topLeft" pos="absolute" top={0} left={0}>
-            {topLeft ?? null}
-          </Box>
-          <Box
+          <OverlayItem id="topLeft" top={0} left={0} content={topLeft} />
+          <OverlayItem
             id="topCenter"
-            pos="absolute"
             top={0}
             left="50%"
             sx={{ translate: "-50%" }}
-          >
-            {topCenter ?? null}
-          </Box>
-          <Box id="topRight" pos="absolute" top={0} right={0}>
-            {topRight ?? null}
-          </Box>
-          <Box id="bottomLeft" pos="absolute" bottom={0} left={0}>
-            {bottomLeft ?? null}
-          </Box>
-          <Box
+            content={topCenter}
+          />
+          <OverlayItem id="topRight" top={0} right={0} content={topRight} />
+          <OverlayItem
+            id="bottomLeft"
+            bottom={0}
+            left={0}
+            content={bottomLeft}
+          />
+          <OverlayItem
             id="bottomCenter"
-            pos="absolute"
             bottom={0}
             left="50%"
             sx={{ translate: "-50%" }}
-          >
-            {bottomCenter ?? null}
-          </Box>
-          <Box id="bottomRight" pos="absolute" bottom={0} right={0}>
-            {bottomRight ?? null}
-          </Box>
+            content={bottomCenter}
+          />
+          <OverlayItem
+            id="bottomRight"
+            bottom={0}
+            right={0}
+            content={bottomRight}
+          />
         </Box>
       </Box>
       {children}
+    </Box>
+  );
+}
+
+function OverlayItem(
+  props: Omit<BoxProps, "pos" | "sx" | "children"> & {
+    id: string;
+    content?: JSX.Element;
+    sx?: CSSObject;
+  }
+) {
+  const baseSx: CSSObject = { zIndex: OVERLAY_ITEM_Z_INDEX };
+  const { sx, content, ...restProps } = props;
+
+  return (
+    <Box {...restProps} pos="absolute" sx={{ ...sx, ...baseSx }}>
+      {content ?? null}
     </Box>
   );
 }
