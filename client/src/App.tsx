@@ -16,13 +16,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 import SettingsDialog from "./components/SettingsDialog";
 import Overlay from "./components/Overlay";
+import CarryTracker from "./components/CarryTracker";
 
 export default function App() {
-  const ballPosition = useBallPosition();
   const theme = useTheme();
-  const { storageToDisplayUnit, formatDisplayValue } = useUnitHelper(
-    MeasurementTypes.Distance
-  );
 
   const [showSettings, setShowSettings] = React.useState(false);
 
@@ -35,21 +32,7 @@ export default function App() {
       <Box id="rootContainer" h="100%" w="100%" bg="black">
         <Overlay
           topLeft={<LaunchControls />}
-          topCenter={
-            <Box
-              p="xs"
-              sx={(theme) =>
-                stylesWithThemedBackgroundColor(theme, {
-                  textAlign: "center",
-                  minWidth: "7rem",
-                })
-              }
-            >
-              <Text>
-                {formatDisplayValue(storageToDisplayUnit(ballPosition.x))}
-              </Text>
-            </Box>
-          }
+          topCenter={<CarryTracker />}
           topRight={
             <Box
               display="flex"
