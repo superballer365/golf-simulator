@@ -1,17 +1,26 @@
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
+import React from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import GolfBall from "./components/GolfBall";
 import { useSimulationActions } from "./stores/SimulationStore";
 import { useTheme } from "./stores/PreferencesStore";
-import { Box, MantineProvider } from "@mantine/core";
+import { Box, Button, MantineProvider } from "@mantine/core";
 import LaunchControls from "./components/LaunchControls";
 import Overlay from "./components/Overlay";
 import CarryTracker from "./components/CarryTracker";
 import SettingsControls from "./components/SettingsControls";
 import { OrbitControls, Sky } from "@react-three/drei";
 import Ground from "./components/Ground";
+import CameraControls from "./components/CameraControls";
+import {
+  CameraMode,
+  useCameraActions,
+  useCameraMode,
+} from "./stores/CameraStore";
 
 export default function App() {
+  const controlsRef = React.useRef(null!);
+  const { setCameraMode } = useCameraActions();
   const theme = useTheme();
 
   return (
@@ -24,14 +33,27 @@ export default function App() {
         <Overlay
           topLeft={<LaunchControls />}
           topCenter={<CarryTracker />}
-          topRight={<SettingsControls />}
+          topRight={
+            <Button.Group>
+              <CameraControls />
+              <SettingsControls />
+            </Button.Group>
+          }
         >
-          <Canvas camera={{ position: [0, 3, 50] }}>
+          <Canvas
+            camera={{ position: [0, 3, 50] }}
+            onPointerDown={() =>
+              // As long as we have oribital controls, if the user clicks on
+              // the canvas they likely moved the camera from one of its
+              // predefined states.
+              setCameraMode(CameraMode.Indeterminate)
+            }
+          >
             {/* NOTE: we may need to introduce a context bridge at some point if we need to use
           information from the matinine context INSIDE of the canvas. We don't have this need
           just yet. See here for more info: 
           https://standard.ai/blog/introducing-standard-view-and-react-three-fiber-context-bridge/ */}
-            <OrbitControls />
+            <OrbitControls ref={controlsRef} target={[0, 10, 0]} />
             <ambientLight />
             <Sky
               distance={450000}
@@ -42,6 +64,7 @@ export default function App() {
             <Ground />
             <GolfBall />
             <PhysicsTicker />
+            <CameraUpdater controlsRef={controlsRef} />
             {/* <primitive object={new THREE.AxesHelper(10)} />
             <primitive
               object={new THREE.GridHelper(100)}
@@ -52,6 +75,56 @@ export default function App() {
       </Box>
     </MantineProvider>
   );
+}
+
+const modeToCameraMap = {
+  [CameraMode.BallCam]: {
+    position: {
+      x: -10,
+      y: 0,
+      z: 0,
+    },
+    target: {
+      x: 0,
+      y: 0,
+      z: 0,
+    },
+  },
+  [CameraMode.SideView]: {
+    position: {
+      x: 0,
+      y: 3,
+      z: 50,
+    },
+    target: {
+      x: 0,
+      y: 10,
+      z: 0,
+    },
+  },
+};
+
+interface CameraUpdaterProps {
+  controlsRef: React.RefObject<any>;
+}
+
+function CameraUpdater({ controlsRef }: CameraUpdaterProps) {
+  const camera = useThree((state) => state.camera);
+  const cameraRef = React.useRef(camera);
+  cameraRef.current = camera;
+  const cameraMode = useCameraMode();
+
+  React.useEffect(() => {
+    if (cameraMode === CameraMode.Indeterminate) return;
+
+    const cameraState = modeToCameraMap[cameraMode];
+    const { x: targetX, y: targetY, z: targetZ } = cameraState.target;
+    controlsRef.current.target.set(targetX, targetY, targetZ);
+    const { x: posX, y: posY, z: posZ } = cameraState.position;
+    camera.position.set(posX, posY, posZ);
+  }, [cameraMode]);
+
+  return null;
 }
 
 /**
