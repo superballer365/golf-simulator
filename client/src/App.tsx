@@ -20,8 +20,8 @@ import {
 
 export default function App() {
   const controlsRef = React.useRef(null!);
-  const { setCameraMode } = useCameraActions();
   const theme = useTheme();
+  const { setCameraMode } = useCameraActions();
 
   return (
     <MantineProvider
@@ -83,8 +83,6 @@ interface CameraUpdaterProps {
 
 function CameraUpdater({ controlsRef }: CameraUpdaterProps) {
   const camera = useThree((state) => state.camera);
-  const cameraRef = React.useRef(camera);
-  cameraRef.current = camera;
   const cameraState = useCameraState();
 
   React.useEffect(() => {
