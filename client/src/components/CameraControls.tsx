@@ -4,7 +4,7 @@ import {
   faGolfBall,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ActionIcon, Menu } from "@mantine/core";
+import { Button, Menu } from "@mantine/core";
 import React from "react";
 import { CameraMode, useCameraActions } from "../stores/CameraStore";
 
@@ -14,9 +14,9 @@ export default function CameraControls() {
   return (
     <Menu withArrow>
       <Menu.Target>
-        <ActionIcon variant="filled" color="blue.5">
+        <Button variant="default" color="blue.5" size="xs">
           <FontAwesomeIcon icon={faCamera} />
-        </ActionIcon>
+        </Button>
       </Menu.Target>
       <Menu.Dropdown>
         <Menu.Item

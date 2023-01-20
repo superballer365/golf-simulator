@@ -1,7 +1,7 @@
 import React from "react";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ActionIcon, Popover, SegmentedControl, Select } from "@mantine/core";
+import { Button, Popover, SegmentedControl, Select } from "@mantine/core";
 import {
   usePreferencesActions,
   useTheme,
@@ -21,13 +21,14 @@ export default function SettingsControls() {
   return (
     <Popover opened={showSettings} withArrow onChange={setShowSettings}>
       <Popover.Target>
-        <ActionIcon
-          variant="filled"
+        <Button
+          variant="default"
           color="blue.5"
+          size="xs"
           onClick={() => setShowSettings(!showSettings)}
         >
           <FontAwesomeIcon icon={faGear} />
-        </ActionIcon>
+        </Button>
       </Popover.Target>
       <Popover.Dropdown>
         <SettingsDialog />
