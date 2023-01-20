@@ -15,7 +15,7 @@ import CameraControls from "./components/CameraControls";
 import {
   CameraMode,
   useCameraActions,
-  useCameraMode,
+  useCameraState,
 } from "./stores/CameraStore";
 
 export default function App() {
@@ -45,7 +45,7 @@ export default function App() {
             onPointerDown={() =>
               // As long as we have oribital controls, if the user clicks on
               // the canvas they likely moved the camera from one of its
-              // predefined states.
+              // determinate states.
               setCameraMode(CameraMode.Indeterminate)
             }
           >
@@ -77,33 +77,6 @@ export default function App() {
   );
 }
 
-const modeToCameraMap = {
-  [CameraMode.BallCam]: {
-    position: {
-      x: -10,
-      y: 0,
-      z: 0,
-    },
-    target: {
-      x: 0,
-      y: 0,
-      z: 0,
-    },
-  },
-  [CameraMode.SideView]: {
-    position: {
-      x: 0,
-      y: 3,
-      z: 50,
-    },
-    target: {
-      x: 0,
-      y: 10,
-      z: 0,
-    },
-  },
-};
-
 interface CameraUpdaterProps {
   controlsRef: React.RefObject<any>;
 }
@@ -112,17 +85,16 @@ function CameraUpdater({ controlsRef }: CameraUpdaterProps) {
   const camera = useThree((state) => state.camera);
   const cameraRef = React.useRef(camera);
   cameraRef.current = camera;
-  const cameraMode = useCameraMode();
+  const cameraState = useCameraState();
 
   React.useEffect(() => {
-    if (cameraMode === CameraMode.Indeterminate) return;
+    if (!cameraState) return;
 
-    const cameraState = modeToCameraMap[cameraMode];
     const { x: targetX, y: targetY, z: targetZ } = cameraState.target;
     controlsRef.current.target.set(targetX, targetY, targetZ);
     const { x: posX, y: posY, z: posZ } = cameraState.position;
     camera.position.set(posX, posY, posZ);
-  }, [cameraMode]);
+  }, [cameraState]);
 
   return null;
 }
