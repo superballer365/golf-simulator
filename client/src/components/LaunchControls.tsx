@@ -1,5 +1,11 @@
-import { Button, TextInput } from "@mantine/core";
-import { useState } from "react";
+import {
+  faPlay,
+  faRocket,
+  faRotateLeft,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Box, Button, NumberInput, Popover } from "@mantine/core";
+import React from "react";
 import useUnitHelper from "../hooks/useUnitHelper";
 import { useUnitPreferences } from "../stores/PreferencesStore";
 
@@ -9,10 +15,50 @@ import {
   useSimulationActions,
   useSimulationStatus,
 } from "../stores/SimulationStore";
-import { stylesWithThemedLabelColor } from "../utils/styles";
 import { MeasurementTypes } from "../utils/units";
 
 export default function LaunchControls() {
+  const [showControls, setShowControls] = React.useState(true);
+  const simulationStatus = useSimulationStatus();
+
+  const { start, reset } = useSimulationActions();
+
+  return (
+    <>
+      <Popover opened={showControls} withArrow>
+        <Popover.Target>
+          <Button
+            variant="default"
+            color="blue.5"
+            size="xs"
+            onClick={() => setShowControls((prev) => !prev)}
+          >
+            <FontAwesomeIcon icon={faRocket} />
+          </Button>
+        </Popover.Target>
+        <Popover.Dropdown>
+          <LaunchControlsDialog />
+        </Popover.Dropdown>
+      </Popover>
+      {simulationStatus === SimulationStatus.NotStarted ? (
+        <Button
+          variant="default"
+          color="blue.5"
+          size="xs"
+          onClick={() => start()}
+        >
+          <FontAwesomeIcon color="green" icon={faPlay} />
+        </Button>
+      ) : (
+        <Button variant="default" color="blue.5" size="xs" onClick={reset}>
+          <FontAwesomeIcon icon={faRotateLeft} />
+        </Button>
+      )}
+    </>
+  );
+}
+
+function LaunchControlsDialog() {
   const simulationStatus = useSimulationStatus();
   const launchConditions = useLaunchConditions();
   const unitPreferences = useUnitPreferences();
@@ -24,49 +70,34 @@ export default function LaunchControls() {
     displayToStorageUnit: speedDisplayToStorageUnit,
     storageToDisplayUnit: speedStorageToDisplayUnit,
   } = useUnitHelper(MeasurementTypes.Speed);
-  const { start, reset } = useSimulationActions();
-
-  const roundedInitialSpeed = speedStorageToDisplayUnit(
-    launchConditions.speed
-  ).toFixed(2);
-  const roundedInitialVerticalAngle = angleStorageToDisplayUnit(
-    launchConditions.verticalAngle
-  ).toFixed(2);
-  const [speed, setSpeed] = useState(roundedInitialSpeed);
-  const [verticalAngle, setVerticalAngle] = useState(
-    roundedInitialVerticalAngle
-  );
+  const { updateLaunchConditions } = useSimulationActions();
 
   return (
-    <>
-      <TextInput
+    <Box w={200}>
+      <NumberInput
         label={`Ball speed (${unitPreferences.speed})`}
-        value={speed}
-        onChange={(event) => setSpeed(event.currentTarget.value)}
-        sx={(theme) => stylesWithThemedLabelColor(theme)}
+        precision={1}
+        disabled={simulationStatus === SimulationStatus.InProgress}
+        value={speedStorageToDisplayUnit(launchConditions.speed)}
+        onChange={(value) => {
+          value &&
+            updateLaunchConditions({
+              speed: speedDisplayToStorageUnit(value),
+            });
+        }}
       />
-      <TextInput
+      <NumberInput
         label={`Launch angle (${unitPreferences.angle})`}
-        value={verticalAngle}
-        onChange={(event) => setVerticalAngle(event.currentTarget.value)}
-        sx={(theme) => stylesWithThemedLabelColor(theme)}
-        mb="sm"
+        precision={1}
+        disabled={simulationStatus === SimulationStatus.InProgress}
+        value={angleStorageToDisplayUnit(launchConditions.verticalAngle)}
+        onChange={(value) => {
+          value &&
+            updateLaunchConditions({
+              verticalAngle: angleDisplayToStorageUnit(value),
+            });
+        }}
       />
-      <Button mr="xs" onClick={reset}>
-        Reset
-      </Button>
-      <Button
-        color="green"
-        onClick={() =>
-          start({
-            speed: speedDisplayToStorageUnit(parseInt(speed)),
-            verticalAngle: angleDisplayToStorageUnit(parseInt(verticalAngle)),
-          })
-        }
-        disabled={simulationStatus !== SimulationStatus.NotStarted}
-      >
-        Start
-      </Button>
-    </>
+    </Box>
   );
 }
