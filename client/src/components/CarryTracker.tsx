@@ -1,5 +1,5 @@
-import { Box, Text } from "@mantine/core";
 import React from "react";
+import { Box, Text } from "@mantine/core";
 import useUnitHelper from "../hooks/useUnitHelper";
 import { useBallPosition } from "../stores/SimulationStore";
 import { stylesWithThemedBackgroundColor } from "../utils/styles";
@@ -13,11 +13,12 @@ export default function CarryTracker() {
 
   return (
     <Box
-      p="xs"
+      p="sm"
       sx={(theme) =>
         stylesWithThemedBackgroundColor(theme, {
-          textAlign: "center",
+          textAlign: "end",
           minWidth: "7rem",
+          borderRadius: 4,
         })
       }
     >
