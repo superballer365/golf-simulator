@@ -57,7 +57,7 @@ const useSimulationStore = create<SimulationState>((set) => ({
       }),
     updateLaunchConditions: (newConditions: Partial<LaunchConditions>) =>
       set((state) => {
-        if (state.status !== SimulationStatus.NotStarted) return state; // only update launch conditions when simulation has not started
+        if (state.status === SimulationStatus.InProgress) return state; // don't update launch conditions while simulation is in progress
         return {
           launchConditions: { ...state.launchConditions, ...newConditions },
         };

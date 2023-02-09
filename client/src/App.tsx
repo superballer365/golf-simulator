@@ -31,7 +31,11 @@ export default function App() {
     >
       <Box id="rootContainer" h="100%" w="100%" bg="black">
         <Overlay
-          topLeft={<LaunchControls />}
+          topLeft={
+            <Button.Group>
+              <LaunchControls />
+            </Button.Group>
+          }
           topCenter={<CarryTracker />}
           topRight={
             <Button.Group>
