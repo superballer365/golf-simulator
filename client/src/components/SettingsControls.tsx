@@ -24,7 +24,7 @@ export default function SettingsControls() {
         <Button
           variant="default"
           color="blue.5"
-          size="xs"
+          size="sm"
           onClick={() => setShowSettings(!showSettings)}
         >
           <FontAwesomeIcon icon={faGear} />

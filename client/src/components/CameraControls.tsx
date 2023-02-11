@@ -14,7 +14,7 @@ export default function CameraControls() {
   return (
     <Menu withArrow>
       <Menu.Target>
-        <Button variant="default" color="blue.5" size="xs">
+        <Button variant="default" color="blue.5" size="sm">
           <FontAwesomeIcon icon={faCamera} />
         </Button>
       </Menu.Target>

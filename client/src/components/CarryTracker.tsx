@@ -13,11 +13,14 @@ export default function CarryTracker() {
 
   return (
     <Box
-      p="sm"
+      display="flex"
+      h="36px"
+      px="18px"
       sx={(theme) =>
         stylesWithThemedBackgroundColor(theme, {
-          textAlign: "end",
-          minWidth: "7rem",
+          alignItems: "center",
+          justifyContent: "flex-end",
+          minWidth: "7.5rem",
           borderRadius: 4,
         })
       }

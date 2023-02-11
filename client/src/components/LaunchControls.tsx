@@ -30,7 +30,7 @@ export default function LaunchControls() {
           <Button
             variant="default"
             color="blue.5"
-            size="xs"
+            size="sm"
             onClick={() => setShowControls((prev) => !prev)}
           >
             <FontAwesomeIcon icon={faRocket} />
@@ -44,13 +44,13 @@ export default function LaunchControls() {
         <Button
           variant="default"
           color="blue.5"
-          size="xs"
+          size="sm"
           onClick={() => start()}
         >
           <FontAwesomeIcon color="green" icon={faPlay} />
         </Button>
       ) : (
-        <Button variant="default" color="blue.5" size="xs" onClick={reset}>
+        <Button variant="default" color="blue.5" size="sm" onClick={reset}>
           <FontAwesomeIcon icon={faRotateLeft} />
         </Button>
       )}
